@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#080a10">
+  <meta name="description" content="SkvizHead, a premium Minecraft skin head generator.">
+  <title>SkvizHead | Minecraft Skin Head Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <div class="grid-noise"></div>
+
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="SkvizHead home">
+        <span class="brand-mark"><span></span><span></span><span></span><span></span></span>
+        <span class="brand-copy"><strong>SkvizHead</strong><small>Skin head generator</small></span>
+      </a>
+      <div class="topbar-actions">
+        <span class="save-status" id="saveStatus"><span class="status-dot"></span>Autosaved</span>
+        <button class="icon-btn" data-action="toggle-theme" aria-label="Toggle theme" title="Toggle theme"><svg><use href="#i-sun"></use></svg></button>
+        <button class="icon-btn" data-action="toggle-sound" aria-label="Toggle sound" title="Toggle sound"><svg><use href="#i-volume"></use></svg></button>
+        <button class="icon-btn" data-action="open-help" aria-label="Open help" title="Keyboard shortcuts"><svg><use href="#i-help"></use></svg></button>
+        <button class="icon-btn" data-action="open-settings" aria-label="Open settings" title="Settings"><svg><use href="#i-settings"></use></svg></button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="preview-column" aria-label="3D preview">
+        <div class="section-heading preview-heading">
+          <div><p class="eyebrow">LIVE CANVAS</p><h1>Build your <em>signature</em> head.</h1></div>
+          <div class="preview-actions">
+            <button class="soft-btn" data-action="undo" title="Undo (Ctrl+Z)" aria-label="Undo"><svg><use href="#i-undo"></use></svg></button>
+            <button class="soft-btn" data-action="redo" title="Redo (Ctrl+Y)" aria-label="Redo"><svg><use href="#i-redo"></use></svg></button>
+            <button class="soft-btn" data-action="reset-camera" title="Reset camera"><svg><use href="#i-focus"></use></svg><span>Reset view</span></button>
+          </div>
+        </div>
+
+        <div class="preview-card" id="previewCard">
+          <div class="preview-toolbar">
+            <div class="live-badge"><span></span>Live preview</div>
+            <div class="view-presets" aria-label="Camera view presets">
+              <button class="view-btn active" data-camera="front">Front</button>
+              <button class="view-btn" data-camera="threequarter">3/4</button>
+              <button class="view-btn" data-camera="side">Side</button>
+              <button class="view-btn" data-camera="top">Top</button>
+              <button class="view-btn" data-camera="back">Back</button>
+            </div>
+            <button class="icon-btn on-preview" data-action="fullscreen" aria-label="Toggle fullscreen" title="Fullscreen"><svg><use href="#i-expand"></use></svg></button>
+          </div>
+          <div class="canvas-wrap" id="rendererContainer" tabindex="0" aria-label="Interactive Minecraft head preview">
+            <div class="canvas-loading" id="canvasLoading"><span class="spinner"></span><span>Initializing renderer</span></div>
+            <div class="empty-state" id="emptyState">
+              <div class="empty-icon"><svg><use href="#i-upload"></use></svg></div>
+              <h2>Upload a Minecraft skin</h2>
+              <p>PNG, 64×64 or 128×128 recommended</p>
+              <button class="primary-btn compact" data-action="choose-skin"><svg><use href="#i-upload"></use></svg>Choose skin</button>
+              <span class="drop-hint">or drag and drop anywhere on the canvas</span>
+            </div>
+            <div class="drop-overlay" id="dropOverlay"><div><svg><use href="#i-upload"></use></svg><strong>Drop your Minecraft skin</strong><span>Release to load the PNG</span></div></div>
+            <div class="canvas-hud">
+              <span class="hud-chip"><svg><use href="#i-mouse"></use></svg>Drag to rotate</span>
+              <span class="hud-chip"><svg><use href="#i-wheel"></use></svg>Scroll to zoom</span>
+            </div>
+            <div class="success-flash" id="successFlash">Skin loaded</div>
+          </div>
+          <div class="preview-footer">
+            <div class="skin-meta" id="skinMeta"><span class="meta-icon"><svg><use href="#i-cube"></use></svg></span><span><strong>No skin loaded</strong><small>Ready when you are</small></span></div>
+            <div class="preview-footer-actions"><span class="quality-label"><span class="status-dot cyan"></span><span id="renderQualityLabel">High quality</span></span><button class="text-btn" data-action="reset-pose"><svg><use href="#i-reset"></use></svg>Reset pose</button></div>
+          </div>
+        </div>
+        <div class="tip-line"><svg><use href="#i-spark"></use></svg><span>Tip: press <kbd>1</kbd> for front, <kbd>2</kbd> for 3/4, or <kbd>R</kbd> to reset the pose.</span></div>
+      </section>
+
+      <aside class="control-column" aria-label="Editor controls">
+        <nav class="editor-tabs" role="tablist" aria-label="Editor sections">
+          <button class="tab-btn active" role="tab" aria-selected="true" data-tab="preview"><svg><use href="#i-eye"></use></svg><span>Preview</span></button>
+          <button class="tab-btn" role="tab" aria-selected="false" data-tab="pose"><svg><use href="#i-rotate"></use></svg><span>Pose</span></button>
+          <button class="tab-btn" role="tab" aria-selected="false" data-tab="camera"><svg><use href="#i-camera"></use></svg><span>Camera</span></button>
+          <button class="tab-btn" role="tab" aria-selected="false" data-tab="background"><svg><use href="#i-palette"></use></svg><span>Background</span></button>
+          <button class="tab-btn" role="tab" aria-selected="false" data-tab="lighting"><svg><use href="#i-light"></use></svg><span>Light</span></button>
+          <button class="tab-btn" role="tab" aria-selected="false" data-tab="export"><svg><use href="#i-download"></use></svg><span>Export</span></button>
+        </nav>
+
+        <div class="panel-scroll">
+          <section class="tab-panel active" id="panel-preview" role="tabpanel">
+            <div class="panel-intro"><div><p class="eyebrow">WORKSPACE</p><h2>Start creating</h2></div><span class="panel-number">01</span></div>
+            <div class="upload-card" data-action="choose-skin"><div class="upload-card-icon"><svg><use href="#i-upload"></use></svg></div><div><strong>Load a new skin</strong><span>PNG only, processed locally</span></div><svg class="chevron"><use href="#i-chevron"></use></svg></div>
+            <input type="file" id="fileInput" accept="image/png,.png" hidden>
+            <div class="quick-grid">
+              <button class="quick-card" data-camera="front"><span class="quick-icon"><svg><use href="#i-front"></use></svg></span><strong>Front view</strong><small>Press 1</small></button>
+              <button class="quick-card" data-camera="threequarter"><span class="quick-icon"><svg><use href="#i-cube"></use></svg></span><strong>3/4 view</strong><small>Press 2</small></button>
+              <button class="quick-card" data-action="reset-pose"><span class="quick-icon"><svg><use href="#i-reset"></use></svg></span><strong>Reset pose</strong><small>Press R</small></button>
+              <button class="quick-card" data-action="open-help"><span class="quick-icon"><svg><use href="#i-help"></use></svg></span><strong>Quick help</strong><small>Shortcuts</small></button>
+            </div>
+            <div class="info-callout"><svg><use href="#i-lock"></use></svg><span>Your skin never leaves this browser. SkvizHead runs entirely client-side.</span></div>
+          </section>
+
+          <section class="tab-panel" id="panel-pose" role="tabpanel">
+            <div class="panel-intro"><div><p class="eyebrow">MODEL CONTROL</p><h2>Shape the pose</h2></div><span class="panel-number">02</span></div>
+            <div class="preset-block"><div class="control-label"><span>Pose presets</span><span class="muted">Instant looks</span></div><div class="preset-row" id="posePresets"><button class="preset active" data-pose="default">Default</button><button class="preset" data-pose="front">Front</button><button class="preset" data-pose="hero">Hero</button><button class="preset" data-pose="profile">Profile</button><button class="preset" data-pose="gaming">Gaming</button><button class="preset" data-pose="minimal">Minimal</button></div></div>
+            <div class="control-stack">
+              <div class="range-control"><div class="control-label"><span>Rotation X</span><output id="rotXValue">0°</output></div><input class="range" type="range" id="rotX" min="-180" max="180" step="1" value="0"></div>
+              <div class="range-control"><div class="control-label"><span>Rotation Y</span><output id="rotYValue">0°</output></div><input class="range" type="range" id="rotY" min="-180" max="180" step="1" value="0"></div>
+              <div class="range-control"><div class="control-label"><span>Rotation Z</span><output id="rotZValue">0°</output></div><input class="range" type="range" id="rotZ" min="-180" max="180" step="1" value="0"></div>
+              <div class="range-control"><div class="control-label"><span>Head scale</span><output id="scaleValue">1.20×</output></div><input class="range" type="range" id="headScale" min="0.5" max="2.5" step="0.05" value="1.2"></div>
+            </div>
+            <button class="secondary-btn full" data-action="reset-pose"><svg><use href="#i-reset"></use></svg>Reset pose</button>
+          </section>
+
+          <section class="tab-panel" id="panel-camera" role="tabpanel">
+            <div class="panel-intro"><div><p class="eyebrow">VIEWER CONTROL</p><h2>Frame the shot</h2></div><span class="panel-number">03</span></div>
+            <div class="camera-preset-grid"><button data-camera="front"><span>Front</span><small>0°</small></button><button data-camera="threequarter"><span>3/4</span><small>45°</small></button><button data-camera="side"><span>Side</span><small>90°</small></button><button data-camera="top"><span>Top</span><small>High</small></button><button data-camera="back"><span>Back</span><small>180°</small></button></div>
+            <div class="control-stack">
+              <div class="range-control"><div class="control-label"><span>Zoom distance</span><output id="zoomValue">3.20</output></div><input class="range" type="range" id="cameraZoom" min="1.7" max="6" step="0.05" value="3.2"></div>
+              <div class="range-control"><div class="control-label"><span>Field of view</span><output id="fovValue">35°</output></div><input class="range" type="range" id="cameraFov" min="20" max="70" step="1" value="35"></div>
+            </div>
+            <button class="secondary-btn full" data-action="reset-camera"><svg><use href="#i-focus"></use></svg>Reset camera</button>
+          </section>
+
+          <section class="tab-panel" id="panel-background" role="tabpanel">
+            <div class="panel-intro"><div><p class="eyebrow">SCENE DESIGN</p><h2>Set the mood</h2></div><span class="panel-number">04</span></div>
+            <div class="segmented" role="radiogroup" aria-label="Background type"><button class="seg active" data-bg-type="gradient">Gradient</button><button class="seg" data-bg-type="solid">Solid</button><button class="seg" data-bg-type="grid">Grid</button><button class="seg" data-bg-type="glow">Glow</button><button class="seg" data-bg-type="transparent">Clear</button></div>
+            <div class="color-controls"><label class="color-field"><span>Color 1</span><input type="color" id="bgColor1" value="#111a35"><code id="bgColor1Text">#111A35</code></label><label class="color-field"><span>Color 2</span><input type="color" id="bgColor2" value="#2563eb"><code id="bgColor2Text">#2563EB</code></label></div>
+            <div class="range-control angle-control"><div class="control-label"><span>Gradient angle</span><output id="bgAngleValue">135°</output></div><input class="range" type="range" id="bgAngle" min="0" max="360" step="1" value="135"></div>
+            <div class="control-label preset-title"><span>Presets</span><span class="muted">Curated palettes</span></div><div class="background-presets" id="backgroundPresets"></div>
+            <button class="secondary-btn full" data-action="reset-background"><svg><use href="#i-reset"></use></svg>Reset background</button>
+          </section>
+
+          <section class="tab-panel" id="panel-lighting" role="tabpanel">
+            <div class="panel-intro"><div><p class="eyebrow">RENDER STYLE</p><h2>Dial in the light</h2></div><span class="panel-number">05</span></div>
+            <div class="lighting-presets"><button class="preset active" data-lighting="studio">Studio</button><button class="preset" data-lighting="soft">Soft</button><button class="preset" data-lighting="dramatic">Dramatic</button><button class="preset" data-lighting="minecraft">Minecraft</button></div>
+            <div class="control-stack">
+              <div class="range-control"><div class="control-label"><span>Ambient light</span><output id="ambientValue">1.10</output></div><input class="range" type="range" id="ambientLight" min="0" max="2" step="0.05" value="1.1"></div>
+              <div class="range-control"><div class="control-label"><span>Main light</span><output id="mainLightValue">2.20</output></div><input class="range" type="range" id="mainLight" min="0" max="4" step="0.05" value="2.2"></div>
+              <div class="range-control"><div class="control-label"><span>Rim light</span><output id="rimLightValue">1.20</output></div><input class="range" type="range" id="rimLight" min="0" max="4" step="0.05" value="1.2"></div>
+              <div class="range-control"><div class="control-label"><span>Light rotation</span><output id="lightRotationValue">35°</output></div><input class="range" type="range" id="lightRotation" min="-180" max="180" step="1" value="35"></div>
+            </div>
+            <div class="toggle-row"><div><strong>Soft shadow</strong><small>Lightweight ground shadow</small></div><button class="toggle on" id="shadowToggle" role="switch" aria-checked="true" data-action="toggle-shadow"><span></span></button></div>
+            <button class="secondary-btn full" data-action="reset-lighting"><svg><use href="#i-reset"></use></svg>Reset lighting</button>
+          </section>
+
+          <section class="tab-panel" id="panel-export" role="tabpanel">
+            <div class="panel-intro"><div><p class="eyebrow">FINAL OUTPUT</p><h2>Export your icon</h2></div><span class="panel-number">06</span></div>
+            <div class="export-preview"><div class="export-preview-inner"><svg><use href="#i-image"></use></svg><span>PNG with pixel-perfect textures</span></div></div>
+            <div class="control-label preset-title"><span>Resolution</span><span class="muted">Square output</span></div><div class="resolution-grid"><button class="resolution active" data-resolution="512"><strong>512</strong><small>px</small></button><button class="resolution" data-resolution="1024"><strong>1024</strong><small>px</small></button><button class="resolution" data-resolution="2048"><strong>2048</strong><small>px</small></button></div>
+            <label class="text-field"><span>Filename</span><div><input type="text" id="filename" value="skviz_head.png" spellcheck="false"><span>.png</span></div></label>
+            <div class="export-options"><label class="check-row"><input type="checkbox" id="transparentExport"><span class="fake-check"></span><span>Transparent background</span></label><label class="check-row"><input type="checkbox" id="exportShadow" checked><span class="fake-check"></span><span>Include shadow</span></label><label class="check-row"><input type="checkbox" id="highQuality" checked><span class="fake-check"></span><span>High quality render</span></label></div>
+            <button class="primary-btn full download-btn" data-action="download"><svg><use href="#i-download"></use></svg><span>Download PNG</span><kbd>Ctrl S</kbd></button>
+            <div class="config-box"><div class="control-label"><span>Configuration</span><span class="muted">JSON or legacy format</span></div><textarea id="configInput" rows="5" spellcheck="false" aria-label="Configuration JSON"></textarea><div class="config-actions"><button class="text-btn" data-action="copy-config"><svg><use href="#i-copy"></use></svg>Copy</button><button class="text-btn" data-action="import-config"><svg><use href="#i-paste"></use></svg>Import</button><button class="text-btn" data-action="export-config"><svg><use href="#i-download"></use></svg>Export</button></div></div>
+          </section>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="app-footer"><span>SKVIZHEAD <i>•</i> Browser-native Minecraft tools</span><span><kbd>?</kbd> for help <i>•</i> v2.0</span></footer>
+  </div>
+
+  <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
+  <div class="modal-backdrop" id="modalBackdrop" hidden></div>
+  <dialog class="modal" id="settingsModal" aria-labelledby="settingsTitle"><div class="modal-head"><div><p class="eyebrow">PREFERENCES</p><h2 id="settingsTitle">Settings</h2></div><button class="icon-btn" data-action="close-modal" aria-label="Close settings"><svg><use href="#i-close"></use></svg></button></div><div class="modal-body"><div class="setting-line"><div><strong>Theme</strong><small>Switch the editor appearance</small></div><div class="theme-switch"><button data-theme-choice="dark" class="active">Dark</button><button data-theme-choice="light">Light</button></div></div><div class="setting-line"><div><strong>Sound effects</strong><small>Subtle interface feedback</small></div><button class="toggle on" data-action="toggle-sound" id="soundToggleModal" role="switch" aria-checked="true"><span></span></button></div><div class="setting-line"><div><strong>Animations</strong><small>Reduce motion when disabled</small></div><button class="toggle on" id="motionToggle" role="switch" aria-checked="true" data-action="toggle-motion"><span></span></button></div><div class="setting-line"><div><strong>Auto save</strong><small>Remember settings in this browser</small></div><button class="toggle on" id="autosaveToggle" role="switch" aria-checked="true" data-action="toggle-autosave"><span></span></button></div><div class="setting-line"><div><strong>Render quality</strong><small>Preview pixel ratio</small></div><select id="qualitySelect"><option value="auto">Auto</option><option value="high">High</option><option value="performance">Performance</option></select></div><button class="danger-btn full" data-action="reset-all"><svg><use href="#i-trash"></use></svg>Reset all settings</button></div></dialog>
+  <dialog class="modal help-modal" id="helpModal" aria-labelledby="helpTitle"><div class="modal-head"><div><p class="eyebrow">QUICK GUIDE</p><h2 id="helpTitle">How to use SkvizHead</h2></div><button class="icon-btn" data-action="close-modal" aria-label="Close help"><svg><use href="#i-close"></use></svg></button></div><div class="modal-body help-body"><div class="help-item"><span>01</span><div><strong>Load a skin</strong><p>Choose a PNG or drop it directly on the preview. Your file stays on this device.</p></div></div><div class="help-item"><span>02</span><div><strong>Explore the model</strong><p>Drag to rotate, scroll or pinch to zoom. Use the camera presets for quick framing.</p></div></div><div class="help-item"><span>03</span><div><strong>Style the scene</strong><p>Pose the head, tune the light, then choose a background that fits your skin.</p></div></div><div class="help-item"><span>04</span><div><strong>Export cleanly</strong><p>Pick a resolution and download a crisp PNG with optional transparency and shadow.</p></div></div><div class="shortcut-table"><div><kbd>R</kbd><span>Reset pose</span></div><div><kbd>1</kbd><span>Front view</span></div><div><kbd>2</kbd><span>3/4 view</span></div><div><kbd>3</kbd><span>Side view</span></div><div><kbd>Space</kbd><span>Reset camera</span></div><div><kbd>Ctrl Z</kbd><span>Undo</span></div><div><kbd>Ctrl Y</kbd><span>Redo</span></div><div><kbd>Ctrl S</kbd><span>Download PNG</span></div></div></div></dialog>
+  <dialog class="modal confirm-modal" id="confirmModal" aria-labelledby="confirmTitle"><div class="modal-head"><div><p class="eyebrow">ARE YOU SURE?</p><h2 id="confirmTitle">Reset all settings?</h2></div><button class="icon-btn" data-action="close-modal" aria-label="Close dialog"><svg><use href="#i-close"></use></svg></button></div><div class="modal-body"><p class="modal-copy">Your current editor settings will be restored to the default workspace. Your uploaded skin will stay loaded.</p><div class="modal-actions"><button class="secondary-btn" data-action="close-modal">Cancel</button><button class="danger-btn" data-action="confirm-reset">Reset</button></div></div></dialog>
+
+  <svg class="icon-sprite" aria-hidden="true">
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"></path><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"></path></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M9.7 9a2.4 2.4 0 1 1 3.9 1.86c-.95.76-1.6 1.2-1.6 2.64M12 17h.01"></path></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"></path><path d="m19.4 15 .1.1a1.8 1.8 0 0 1-2.5 2.5l-.1-.1a1.8 1.8 0 0 0-3.1 1.3v.2a1.8 1.8 0 0 1-3.6 0v-.2a1.8 1.8 0 0 0-3.1-1.3l-.1.1a1.8 1.8 0 1 1-2.5-2.5l.1-.1A1.8 1.8 0 0 0 3.3 12a1.8 1.8 0 0 1 0-3.6h.2a1.8 1.8 0 0 0 1.3-3.1l-.1-.1a1.8 1.8 0 1 1 2.5-2.5l.1.1A1.8 1.8 0 0 0 10.4 1.5h.2a1.8 1.8 0 0 1 3.6 0v.2a1.8 1.8 0 0 0 3.1 1.3l.1-.1a1.8 1.8 0 1 1 2.5 2.5l-.1.1A1.8 1.8 0 0 0 18.7 8h.2a1.8 1.8 0 0 1 0 3.6h-.2a1.8 1.8 0 0 0 .7 3.4Z"></path></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 8 4 12l5 4"></path><path d="M4 12h9a5 5 0 0 1 5 5v1"></path></symbol>
+    <symbol id="i-redo" viewBox="0 0 24 24"><path d="m15 8 5 4-5 4"></path><path d="M20 12h-9a5 5 0 0 0-5 5v1"></path></symbol>
+    <symbol id="i-focus" viewBox="0 0 24 24"><path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4"></path><circle cx="12" cy="12" r="3"></circle></symbol>
+    <symbol id="i-expand" viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5M3 8l6 6M21 8l-6 6M3 16l6-6M21 16l-6-6"></path></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"></path></symbol>
+    <symbol id="i-mouse" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="5"></rect><path d="M12 3v5"></path></symbol>
+    <symbol id="i-wheel" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="5"></rect><path d="M12 6v4"></path></symbol>
+    <symbol id="i-cube" viewBox="0 0 24 24"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"></path><path d="m4 7.5 8 4.5 8-4.5M12 12v9"></path></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.34-5.66L4 8.7"></path><path d="M4 4v4.7h4.7"></path></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 1.2 5.8L19 10l-5.8 1.2L12 17l-1.2-5.8L5 10l5.8-1.2L12 3ZM19 16l.5 2.5L22 19l-2.5.5L19 22l-.5-2.5L16 19l2.5-.5L19 16Z"></path></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12s3.3-6 9.5-6 9.5 6 9.5 6-3.3 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.5"></circle></symbol>
+    <symbol id="i-rotate" viewBox="0 0 24 24"><path d="M4 8a8 8 0 1 1-.2 7.5"></path><path d="M4 4v4h4"></path></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z"></path><circle cx="12" cy="13" r="3.5"></circle></symbol>
+    <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0 0 18h1.2a1.8 1.8 0 0 0 1.1-3.2 1.8 1.8 0 0 1 1.1-3.2H17A4 4 0 0 0 21 11c0-4.4-4-8-9-8Z"></path><circle cx="7.5" cy="10" r="1"></circle><circle cx="10" cy="6.8" r="1"></circle><circle cx="14" cy="6.8" r="1"></circle></symbol>
+    <symbol id="i-light" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M8.5 14.5A6 6 0 1 1 15.5 14c-.8.6-1.3 1.2-1.5 2H10c-.2-.8-.7-1.1-1.5-1.5Z"></path><path d="M12 2v1M4.9 4.9l.7.7M2 12h1M19.1 4.9l-.7.7M21 12h-1"></path></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5"></path><path d="M4 19v1h16v-1"></path></symbol>
+    <symbol id="i-front" viewBox="0 0 24 24"><path d="M4 8 12 4l8 4v8l-8 4-8-4V8Z"></path><path d="m4 8 8 4 8-4M12 12v8"></path></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"></path></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="8.5" cy="9" r="1.5"></circle><path d="m4 17 5-5 3 3 2-2 6 5"></path></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="12" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"></path></symbol>
+    <symbol id="i-paste" viewBox="0 0 24 24"><path d="M8 5h8v3H8z"></path><rect x="5" y="4" width="14" height="16" rx="2"></rect><path d="M9 13h6M9 16h4"></path></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"></path></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v5M14 11v5M6 7l1 13h10l1-13M9 7V4h6v3"></path></symbol>
+  </svg>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
