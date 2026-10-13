@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1b1a17">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<title>headrender — иконка головы из скина</title>
+<style>
+*{box-sizing:border-box}
+html{background:#1b1a17}
+body{margin:0;color:#e6e0d3;font:15px/1.55 Georgia,"Times New Roman",serif}
+code,textarea,button,.dd-list{font-family:Menlo,Consolas,"Courier New",monospace}
+.wrap{max-width:940px;margin:0 auto;padding:28px 20px 40px}
+header{display:flex;align-items:center;gap:12px;border-bottom:2px solid #e6e0d3;padding-bottom:12px;margin-bottom:28px}
+header canvas{width:36px;height:36px;image-rendering:pixelated}
+header b{font:700 20px/1 Menlo,Consolas,monospace;letter-spacing:-.5px}
+.cols{display:grid;grid-template-columns:330px 1fr;gap:36px;align-items:start}
+@media (max-width:760px){.cols{grid-template-columns:1fr}}
+h2{font:700 13px/1 Menlo,Consolas,monospace;text-transform:lowercase;margin:0 0 10px;color:#9a9384}
+h2:before{content:"# ";color:#8fc45a}
+.drop{border:2px dashed #5c574d;padding:18px 14px;cursor:pointer;background:#22211d}
+.drop:hover,.drop.over,.drop:focus-visible{border-color:#8fc45a;background:#25301c;outline:none}
+.drop strong{display:block;font-weight:normal}
+.drop span{font-size:13px;color:#9a9384}
+label.l{display:block;font-size:14px;margin:18px 0 6px}
+textarea{width:100%;min-height:84px;resize:vertical;font-size:12px;line-height:1.4;padding:8px;border:2px solid #5c574d;background:#141310;color:#e6e0d3;border-radius:0}
+textarea::placeholder{color:#6d675b}
+textarea:focus{outline:2px solid #8fc45a;outline-offset:1px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
+button{min-height:40px;padding:0 14px;font-size:13px;border:2px solid #e6e0d3;background:#26241f;color:#e6e0d3;cursor:pointer;box-shadow:3px 3px 0 #000;border-radius:0}
+button:hover{background:#302e28}
+button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #000}
+button.p{background:#5a8f2c;color:#fff;border-color:#a6d47a}
+button.p:hover{background:#679f34}
+button:focus-visible{outline:2px dashed #8fc45a;outline-offset:3px}
+.msg{margin-top:10px;font-size:13px;display:none;padding:6px 8px;border-left:3px solid}
+.msg.err{display:block;background:#3a1f19;color:#f0a493;border-color:#d0604a}
+.msg.ok{display:block;background:#22301a;color:#b5dc8e;border-color:#8fc45a}
+.skin{display:flex;gap:12px;align-items:flex-end;margin-top:18px}
+.skin canvas{width:96px;height:96px;image-rendering:pixelated;border:1px solid #5c574d;background:#141310}
+.skin p{margin:0;font-size:13px;color:#9a9384}
+html,body{background:#1b1a17;overflow-x:hidden}
+html{-webkit-text-size-adjust:100%}
+body{min-height:var(--tg-viewport-stable-height,100vh)}
+button,label,#dd-btn{-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.tg .wrap{padding-top:calc(14px + var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px));padding-bottom:calc(24px + var(--tg-safe-area-inset-bottom,0px));padding-left:calc(14px + var(--tg-safe-area-inset-left,0px));padding-right:calc(14px + var(--tg-safe-area-inset-right,0px))}
+@media (max-width:560px){
+  .wrap{padding:16px 14px 28px}
+  .cols{gap:22px}
+  .big{padding:12px}
+  .big canvas#out{width:min(256px,100%);height:auto;aspect-ratio:1}
+  .big .fx{top:12px}
+  .bar{max-width:100%;overflow:hidden}
+  .bar .slot{width:calc((100vw - 28px - 8px)/9);height:calc((100vw - 28px - 8px)/9);max-width:40px;max-height:40px}
+  .bar .slot canvas{width:80%;height:80%}
+  .row{display:flex;gap:10px}
+  .row button{flex:1}
+  .opts{flex-wrap:wrap;row-gap:12px}
+  button{min-height:44px}
+}
+.tgsheet{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,0);transition:background .25s ease}
+.tgsheet.on{background:rgba(0,0,0,.6)}
+.tgsheet .card{width:100%;max-width:480px;background:#24231f;border-top:2px solid #5c574d;padding:18px 16px calc(18px + var(--tg-safe-area-inset-bottom,0px));transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.9,.3,1);text-align:center}
+.tgsheet.on .card{transform:none}
+.tgsheet img{width:192px;height:192px;image-rendering:pixelated;display:block;margin:4px auto 12px;-webkit-touch-callout:default}
+.tgsheet p{margin:0 0 14px;color:#9a9384;font-size:14px}
+.tgsheet .row{justify-content:center}
+.big{position:relative;background:#2a2925;border:2px solid #000;padding:18px;display:flex;justify-content:center}
+.big canvas#out{width:256px;height:256px;image-rendering:pixelated}
+.big .px{position:absolute;right:8px;bottom:6px;font:11px Menlo,monospace;color:#8a8476}
+.bar{display:flex;margin:16px 0 4px;padding:3px;background:#c6c6c6;border:2px solid #000;width:max-content;max-width:100%;overflow-x:auto}
+.slot{width:40px;height:40px;background:#8b8b8b;border-style:solid;border-width:2px;border-color:#373737 #fff #fff #373737;display:flex;align-items:center;justify-content:center;flex:none}
+.slot.sel{outline:3px solid #fff;outline-offset:-1px;position:relative;z-index:1}
+.slot canvas{width:32px;height:32px;image-rendering:pixelated}
+.cap{font-size:12px;color:#9a9384;margin:0 0 18px}
+.opts{display:flex;gap:4px 20px;flex-wrap:wrap;align-items:center;font-size:14px;margin:14px 0 4px}
+.opts label{display:flex;gap:6px;align-items:center;min-height:36px;cursor:pointer}
+input[type=checkbox]{appearance:none;-webkit-appearance:none;margin:0;flex:none;position:relative;width:20px;height:20px;border:2px solid #5c574d;background:#141310;box-shadow:2px 2px 0 #000;cursor:pointer;transition:background .18s ease,border-color .18s ease,transform .1s ease,box-shadow .1s ease}
+input[type=checkbox]:after{content:"";position:absolute;left:5px;top:1px;width:4px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg) scale(0);transform-origin:50% 50%;opacity:0;transition:transform .25s cubic-bezier(.3,1.6,.5,1),opacity .12s ease}
+input[type=checkbox]:checked{background:#5a8f2c;border-color:#a6d47a}
+input[type=checkbox]:checked:after{transform:rotate(45deg) scale(1);opacity:1}
+.opts label:hover input[type=checkbox]{border-color:#8a8476}
+.opts label:hover input[type=checkbox]:checked{border-color:#c4e6a0}
+input[type=checkbox]:active{transform:translate(2px,2px);box-shadow:0 0 0 #000}
+input[type=checkbox]:focus-visible{outline:2px dashed #8fc45a;outline-offset:3px}
+input[type=checkbox].tick{animation:tick .3s ease}
+@keyframes tick{40%{transform:scale(.85)}100%{transform:none}}
+.opts label{user-select:none}
+.opts label{gap:8px!important}
+/* свой выбор размера */
+.dd{position:relative;display:flex;align-items:center;gap:8px}
+.dd-btn{min-height:36px;min-width:96px;padding:0 30px 0 10px;text-align:left;box-shadow:2px 2px 0 #000;border-color:#5c574d;background:#141310;position:relative}
+.dd-btn:hover{background:#1f1e1a;border-color:#8a8476}
+.dd-btn:after{content:"";position:absolute;right:10px;top:50%;width:0;height:0;margin-top:-2px;border:5px solid transparent;border-top-color:#8fc45a;border-bottom:0;transition:transform .2s ease}
+.dd.open .dd-btn{border-color:#8fc45a}
+.dd.open .dd-btn:after{transform:rotate(180deg)}
+.dd-btn span{display:inline-block}
+.dd-btn span.swap{animation:swap .22s ease}
+@keyframes swap{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.dd-list{position:absolute;left:0;top:calc(100% + 4px);z-index:5;margin:0;padding:3px;list-style:none;min-width:100%;background:#141310;border:2px solid #8fc45a;box-shadow:4px 4px 0 #000;font-size:13px;opacity:0;visibility:hidden;transform:translateY(-6px);transform-origin:top;transition:opacity .16s ease,transform .18s ease,visibility 0s linear .18s}
+.dd.open .dd-list{opacity:1;visibility:visible;transform:none;transition:opacity .16s ease,transform .18s ease,visibility 0s}
+.dd-list li{padding:7px 10px;cursor:pointer;color:#e6e0d3;transition:background .12s ease,color .12s ease,border-color .12s ease}
+.dd.open .dd-list li{animation:li-in .2s ease both}
+.dd.open .dd-list li:nth-child(2){animation-delay:.02s}.dd.open .dd-list li:nth-child(3){animation-delay:.04s}.dd.open .dd-list li:nth-child(4){animation-delay:.06s}.dd.open .dd-list li:nth-child(5){animation-delay:.08s}.dd.open .dd-list li:nth-child(6){animation-delay:.1s}
+@keyframes li-in{from{opacity:0;transform:translateX(-4px)}to{opacity:1;transform:none}}
+.dd-list li:hover,.dd-list li.act{background:#25301c}
+.dd-list li[aria-selected=true]{color:#a6d47a}
+.dd-list li{border-left:3px solid transparent}
+.dd-list li[aria-selected=true]{border-left-color:#8fc45a;font-weight:700}
+.sizes{display:flex;gap:18px;align-items:flex-end;margin-top:18px}
+.sizes figure{margin:0;text-align:center;font:11px Menlo,monospace;color:#9a9384}
+.sizes canvas{display:block;margin:0 auto 3px;image-rendering:pixelated}
+button,.drop,textarea,.dd-btn{transition:background .15s ease,border-color .15s ease,box-shadow .1s ease,transform .1s ease}
+.big .fx{position:absolute;left:50%;top:18px;width:256px;height:256px;margin-left:-128px;pointer-events:none;image-rendering:pixelated}
+.plane{position:fixed;left:0;top:0;z-index:50;pointer-events:none;width:30px;height:24px;margin:-12px 0 0 -15px;will-change:transform,opacity}
+.plane svg{display:block;filter:drop-shadow(2px 2px 0 #000)}
+.trail{position:fixed;z-index:49;width:4px;height:4px;margin:-2px 0 0 -2px;background:#8fc45a;pointer-events:none;animation:trail .9s ease-out forwards}
+@keyframes trail{to{opacity:0;transform:scale(.2)}}
+.landing{position:fixed;z-index:49;top:6px;right:14px;width:34px;height:34px;border:2px solid #8fc45a;pointer-events:none;animation:land .5s ease-out forwards}
+@keyframes land{from{opacity:1;transform:scale(.3)}to{opacity:0;transform:scale(1.4)}}
+#out.pop{animation:pop .28s ease}
+@keyframes pop{from{opacity:.35;transform:scale(.96)}to{opacity:1;transform:none}}
+.big .px{transition:opacity .2s ease}
+@media (prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+.sign{margin-top:56px;padding:20px 0 50px;text-align:center}
+.community{display:flex;width:max-content;align-items:center;gap:9px;position:relative;z-index:2;margin:12px auto 0;padding:10px 16px;color:#9a9384;font:14px/1.4 Menlo,Consolas,monospace;text-decoration:none;border-bottom:1px solid #5c574d;transition:color .2s,border-color .2s,transform .2s;touch-action:manipulation}
+.community:hover{color:#e6e0d3;border-color:#8fc45a;transform:translateY(-2px)}
+.community:focus-visible{outline:2px dashed #8fc45a;outline-offset:4px}
+.sigwrap{position:relative;display:inline-block}
+#sig{display:block;background:transparent;image-rendering:pixelated;opacity:0;transition:opacity .25s ease}
+#sig.on{opacity:1}
+#sigfx{position:absolute;pointer-events:none}
+code{color:#c9c2b2;background:#26241f;padding:0 3px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><canvas id="logo" width="36" height="36" aria-hidden="true"></canvas><b>headrender</b></header>
+
+<div class="cols">
+<section aria-labelledby="h-in">
+<h2 id="h-in">скин</h2>
+<div class="drop" id="drop" tabindex="0" role="button" aria-label="Выбрать файл скина">
+<strong>тыкни или перетащи PNG</strong>
+<span>64×64, можно старый 64×32</span>
+</div>
+<input type="file" id="file" accept="image/png" hidden>
+<label class="l" for="b64">…или вставь base64 / ссылку:</label>
+<textarea id="b64" spellcheck="false" placeholder="eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Ii4uLiJ9fX0="></textarea>
+<div class="row"><button class="p" id="go">готово</button><button id="reset">вернуть Стива</button></div>
+<div class="msg" id="msg" role="status"></div>
+<div class="skin"><canvas id="skin" width="64" height="64" aria-label="Текущий скин"></canvas><p id="skininfo">Стив (по умолчанию)</p></div>
+</section>
+
+<section aria-labelledby="h-out">
+<h2 id="h-out">результат</h2>
+<div class="big"><canvas id="out" width="256" height="256" aria-label="Иконка головы"></canvas><span class="px">256px</span></div>
+<div class="bar" id="bar" aria-label="Предпросмотр в хотбаре"></div>
+<p class="cap">так она будет выглядеть в хотбаре</p>
+<div class="opts">
+<label><input type="checkbox" id="hat" checked> второй слой</label>
+<label><input type="checkbox" id="shade" checked> тени на гранях</label>
+<div class="dd" id="dd"><span id="dd-lbl">размер</span>
+<button type="button" class="dd-btn" id="dd-btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="dd-lbl dd-btn"><span>256 px</span></button>
+<ul class="dd-list" id="dd-list" role="listbox" tabindex="-1" aria-labelledby="dd-lbl">
+<li role="option" data-v="16">16 px</li>
+<li role="option" data-v="32">32 px</li>
+<li role="option" data-v="64">64 px</li>
+<li role="option" data-v="128">128 px</li>
+<li role="option" data-v="256" aria-selected="true">256 px</li>
+<li role="option" data-v="512">512 px</li>
+</ul>
+<input type="hidden" id="size" value="256">
+</div>
+</div>
+<div class="row"><button class="p" id="dl">скачать .png</button><button id="copy">скопировать base64</button></div>
+<div class="sizes" id="sizes"></div>
+</section>
+</div>
+<footer class="sign"><span class="sigwrap"><canvas id="sig" aria-label="TgGeyserMc" role="img"></canvas><canvas id="sigfx" aria-hidden="true"></canvas></span><a class="community" href="https://t.me/tggeysermc" target="_blank" rel="noopener noreferrer"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M21.5 3.5 18.2 20c-.25 1.16-.9 1.44-1.83.9l-5.02-3.7-2.42 2.33c-.27.27-.5.5-1.02.5l.36-5.1 9.3-8.4c.4-.36-.09-.56-.62-.2L5.46 13.58.52 12.03c-1.07-.34-1.09-1.07.23-1.59L20.07 3c.89-.33 1.66.2 1.43.5Z"/></svg><span>Канал</span></a></footer>
+</div>
+<script>
+
+const STEVE='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAdVBMVEUAAAAKvLwAzMwmGgokGAgrHg0zJBE/KhW3g2uzeV5SPYn///+qclmbY0mQWT8Af38AaGhVVVWUYD52SzOBUzmPXj5JJRBCHQp3QjVqQDA0JRIoKCg3Nzc/Pz9KSko6MYlBNZtGOqUDenoFiIgElZUApKQAr6/wvakZAAAAAXRSTlMAQObYZgAAAolJREFUeNrt1l1rHucZReFrj/whu5hSCCQtlOTE/f+/Jz4q9Cu0YIhLcFVpVg+FsOCVehi8jmZgWOzZz33DM4CXlum3gH95GgeAzQZVeL4gTm6Cbp4vqFkD8HwBazPY8wWbMq9utu3mNZ5fotVezbzOE3kBEFbaZuc8kb00NTMUbWJp678Xf2GV7RRtx1TDQQ6XBNvsmL2+2vHq1TftmMPIyAWujtN2cl274ua2jpVpZneXEjjo7XW1q53V9ds4ODO5xIuhvGHvfLI3aixauig415uuO2+vl9+cncfsFw25zL650fXn687jqnXuP68/X3+eV3zE7y6u9eB73MlfAcfbTf3yR8CfAX+if8S/H5/EAbAxj5LN48tULvEBOh8V1AageMTXe2YHAOwHbZxrzPkSR3+ffr8TR2JDzE/4Fj8CDgEwDsW+q+9GsR07hhg2CsALBgMo2v5wNxXnQXMeGQVW7gUAyKI2m6KDsJ8Au3++F5RZO+kKNQjQcLLWgjwUjBXLltFgWWMUUlviocBgNoxNGgMjSxiYAA7zgLFo2hgIENiDU8gQCzDOmViGFAsEuBcQSDCothhpJaDRA8E5fHqH2nTbYm5fHLo1V0u3B7DAuheoeScRYabjjjuzs17cHVaTrTXmK78m9swP34d9oK/dfeXSIH2PW/MXwPvxN/bJlxw8zlYAcEyeI6gNgA/O8P8neN8xe1IHP2gTzegjvhUDfuRygmwEs2GE4mkCDIAzm2R4yAuPsIdR9k8AvMc+3L9+2UEjo4WP0FpgP19O0MzCsqxIoMsdDBvYcQyGmO0ZJRoYCKjLJWY0BAhYwGUBCgkh8MRdOKt+ruqMwAB2OcEX94U1TPbYJP0PkyyAI1S6cSIAAAAASUVORK5CYII=';
+const $=id=>document.getElementById(id);
+const skinC=$('skin'),skinX=skinC.getContext('2d');
+let skinImg=null;
+function msg(t,k){const m=$('msg');m.textContent=t||'';m.className='msg'+(t?' '+k:'');}
+
+function loadSrc(src,info){
+  const img=new Image();img.crossOrigin='anonymous';
+  img.onload=()=>{
+    if(img.width!==64||(img.height!==64&&img.height!==32)){msg('Нужен скин 64×64 или 64×32, а этот '+img.width+'×'+img.height+'.','err');return;}
+    skinImg=img;skinX.clearRect(0,0,64,64);skinX.drawImage(img,0,0);
+    $('skininfo').textContent=info||(img.width+'×'+img.height);
+    msg('',''); render();
+  };
+  img.onerror=()=>msg('Не удалось загрузить картинку. Если это ссылка textures.minecraft.net, браузер мог заблокировать её (CORS) — скачайте PNG и загрузите файлом.','err');
+  img.src=src;
+}
+
+function parseInput(s){
+  s=s.trim().replace(/^"|"$/g,'');
+  if(!s) return null;
+  if(/^data:image\//.test(s)) return {src:s,info:'Из data:URL'};
+  if(/^https?:\/\//.test(s)) return {src:s.replace(/^http:/,'https:'),info:'По ссылке'};
+  const clean=s.replace(/\s+/g,'');
+  if(clean.startsWith('iVBOR')) return {src:'data:image/png;base64,'+clean,info:'PNG из base64'};
+  let txt;
+  try{txt=atob(clean.replace(/-/g,'+').replace(/_/g,'/'));}catch(e){throw new Error('Это не base64.');}
+  if(txt.startsWith('\x89PNG')) return {src:'data:image/png;base64,'+clean,info:'PNG из base64'};
+  let j;try{j=JSON.parse(txt);}catch(e){throw new Error('base64 раскодирован, но внутри не PNG и не JSON.');}
+  const url=j&&j.textures&&j.textures.SKIN&&j.textures.SKIN.url;
+  if(!url) throw new Error('В JSON нет textures.SKIN.url.');
+  return {src:url.replace(/^http:/,'https:'),info:(j.profileName?j.profileName+' — ':'')+'из свойства textures'};
+}
+
+// ---- рендер ----
+// Ракурс GUI из template_skull.json: rotation [30, 45, 0]. Лицо справа, боковая грань (right в UV, x=0..8) — слева, как в игре и на minecraft-heads.com.
+const A=-45*Math.PI/180,B=30*Math.PI/180;
+function proj(x,y,z){const x1=x*Math.cos(A)-z*Math.sin(A),z1=x*Math.sin(A)+z*Math.cos(A);return [x1,-(y*Math.cos(B)-z1*Math.sin(B))];}
+const SHADE={top:1,front:0.92,side:0.72};
+function faces(h){return [
+  {n:'top',  u:8, v:0, p:[[-h,h,-h],[h,h,-h],[-h,h,h]]},
+  {n:'front',u:8, v:8, p:[[-h,h,h],[h,h,h],[-h,-h,h]]},
+  {n:'side', u:0, v:8, p:[[-h,h,-h],[-h,h,h],[-h,-h,-h]]}
+];}
+const tile=document.createElement('canvas');tile.width=tile.height=8;const tx=tile.getContext('2d',{willReadFrequently:true});
+function faceTile(ox,oy,k){
+  tx.clearRect(0,0,8,8);tx.drawImage(skinImg,ox,oy,8,8,0,0,8,8);
+  if(k<1){const d=tx.getImageData(0,0,8,8);for(let i=0;i<d.data.length;i+=4){d.data[i]*=k;d.data[i+1]*=k;d.data[i+2]*=k;}tx.putImageData(d,0,0);}
+  return tile;
+}
+function draw(ctx,S,hat,shade){
+  ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,S,S);ctx.imageSmoothingEnabled=false;
+  if(!skinImg) return;
+  const ext=(Math.abs(Math.cos(A))+Math.abs(Math.sin(A)))*1.125; // всегда с запасом под второй слой, чтобы голова не меняла размер // ширина проекции при h=1 = 2*ext
+  const sc=S*0.5/ext*0.96, cx=S/2, cy=S/2;
+  const layers=[{h:1,du:0}];if(hat)layers.push({h:1.125,du:32});
+  for(const L of layers){
+    for(const f of faces(L.h)){
+      const [p0,p1,p3]=f.p.map(p=>proj(...p)).map(([x,y])=>[cx+x*sc,cy+y*sc]);
+      const t=faceTile(f.u+L.du,f.v,1-(1-SHADE[f.n])*(+shade));
+      const e=L.du?0:0.04; // чуть перекрываем грани, чтобы не было щелей
+      ctx.setTransform((p1[0]-p0[0])/8,(p1[1]-p0[1])/8,(p3[0]-p0[0])/8,(p3[1]-p0[1])/8,p0[0],p0[1]);
+      ctx.drawImage(t,0,0,8,8,-e,-e,8+2*e,8+2*e);
+    }
+  }
+  ctx.setTransform(1,0,0,1,0,0);
+}
+function opts(){return [$('hat').checked,$('shade').checked];}
+function render(){
+  const [hat,shade]=opts();
+  draw($('out').getContext('2d'),256,hat,shade);
+  const box=$('sizes');box.innerHTML='';
+  for(const s of [16,32,48,64]){const c=document.createElement('canvas');c.width=c.height=s;draw(c.getContext('2d'),s,hat,shade);const f=document.createElement('figure');f.appendChild(c);f.append(s+'px');box.appendChild(f);}
+}
+function exportURL(){const s=+$('size').value,c=document.createElement('canvas');c.width=c.height=s;const [h,sh]=opts();draw(c.getContext('2d'),s,h,sh);return c.toDataURL('image/png');}
+
+$('drop').onclick=()=>$('file').click();
+$('drop').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('file').click();}};
+function readFile(f){if(!f)return;const r=new FileReader();r.onload=()=>loadSrc(r.result,f.name);r.readAsDataURL(f);}
+$('file').onchange=e=>readFile(e.target.files[0]);
+['dragenter','dragover'].forEach(ev=>$('drop').addEventListener(ev,e=>{e.preventDefault();$('drop').classList.add('over');}));
+['dragleave','drop'].forEach(ev=>$('drop').addEventListener(ev,e=>{e.preventDefault();$('drop').classList.remove('over');}));
+$('drop').addEventListener('drop',e=>readFile(e.dataTransfer.files[0]));
+function apply(){try{const r=parseInput($('b64').value);if(r)loadSrc(r.src,r.info);}catch(e){msg(e.message,'err');}}
+$('go').onclick=apply;
+$('b64').addEventListener('paste',()=>setTimeout(apply,0));
+$('reset').onclick=()=>{$('b64').value='';loadSrc(STEVE,'Стив (по умолчанию)');};
+$('hat').onchange=$('shade').onchange=render;
+$('dl').onclick=()=>{const a=document.createElement('a');a.href=exportURL();a.download='head_'+$('size').value+'.png';a.click();};
+$('copy').onclick=async()=>{const u=exportURL();try{await navigator.clipboard.writeText(u);msg('Скопировал — это data:URL, можно сразу вставлять в <img src>.','ok');}catch(e){$('b64').value=u;msg('Буфер обмена недоступен — base64 вставлен в поле выше.','ok');}};
+
+// хотбар + логотип
+const bar=$('bar');const slots=[];
+for(let i=0;i<9;i++){const s=document.createElement('div');s.className='slot'+(i===0?' sel':'');bar.appendChild(s);slots.push(s);}
+const hb=document.createElement('canvas');hb.width=hb.height=32;slots[0].appendChild(hb);
+const _render=render;
+render=function(){_render();const [h,sh]=opts();draw(hb.getContext('2d'),32,h,sh);draw($('logo').getContext('2d'),36,true,true);};
+loadSrc(STEVE,'Стив (по умолчанию)');
+
+(()=>{
+  // смена скина: пиксели перекрашиваются по очереди
+  const o=$('out'),big=o.parentNode,W=256,C=4,N=W/C;
+  const fx=document.createElement('canvas');fx.width=fx.height=W;fx.className='fx';fx.setAttribute('aria-hidden','true');big.appendChild(fx);
+  const fc=fx.getContext('2d');
+  const snap=document.createElement('canvas');snap.width=snap.height=W;const sc=snap.getContext('2d');
+  const still=matchMedia('(prefers-reduced-motion: reduce)');
+  let lastSkin=null,lastPrev=null,raf=0,fin=0;
+  const stop=()=>{cancelAnimationFrame(raf);clearTimeout(fin);fc.clearRect(0,0,W,W);o.style.opacity='';};
+  const r0=render;
+  render=function(){
+    const changed=lastSkin&&skinImg&&skinImg!==lastSkin;
+    if(changed){sc.clearRect(0,0,W,W);sc.drawImage(o,0,0,W,W);}
+    stop();r0();lastPrev=lastSkin;lastSkin=skinImg;
+    if(!window.__quiet){o.classList.remove('pop');void o.offsetWidth;}
+    if(!changed||still.matches){if(!window.__quiet)o.classList.add('pop');return;}
+    const A=sc.getImageData(0,0,W,W).data,Bd=o.getContext('2d').getImageData(0,0,W,W).data;
+    // карта «какой пиксель скина где на экране»: рисуем голову скином, где цвет = координаты
+    const oldSkin=lastPrev,newSkin=skinImg,hat=$('hat').checked;
+    const al=c=>{const t=document.createElement('canvas');t.width=t.height=64;const x=t.getContext('2d');if(c)x.drawImage(c,0,0);return x.getImageData(0,0,64,64).data;};
+    const ao=al(oldSkin),an=al(newSkin);
+    const ids=document.createElement('canvas');ids.width=ids.height=64;const ix=ids.getContext('2d');const id=ix.createImageData(64,64);
+    for(let v=0;v<64;v++)for(let u=0;u<64;u++){const k=(v*64+u)*4;const over=u>=32&&v<16;
+      id.data[k]=u*4+2;id.data[k+1]=v*4+2;id.data[k+2]=200;id.data[k+3]=over?((ao[k+3]||an[k+3])?255:0):255;}
+    ix.putImageData(id,0,0);
+    const mc=document.createElement('canvas');mc.width=mc.height=W;const mx=mc.getContext('2d');
+    skinImg=ids;draw(mx,W,hat,false);skinImg=newSkin;
+    const M=mx.getImageData(0,0,W,W).data;
+    const tex=new Int16Array(W*W).fill(-1),sum=new Float32Array(4096),cnt=new Float32Array(4096);
+    for(let p=0;p<W*W;p++){const k=p*4;if(M[k+3]>250&&Math.abs(M[k+2]-200)<6){const t=(M[k+1]>>2)*64+(M[k]>>2);tex[p]=t;sum[t]+=(p%W)+(p/W|0);cnt[t]++;}}
+    // у каждого пикселя скина своё время: волна сверху-слева + случайность
+    const when=new Float32Array(4096);
+    for(let t=0;t<4096;t++)when[t]=cnt[t]?(sum[t]/cnt[t])/(2*W)*0.45+Math.random()*0.4:0;
+    const out=fc.createImageData(W,W),D=out.data,F=0.15;
+    o.style.opacity='0';
+    const T=1100,t0=performance.now();
+    const step=now=>{
+      const t=Math.min(1,(now-t0)/T);
+      for(let p=0;p<W*W;p++){
+        const k=p*4,tt=tex[p];
+        let q=tt<0?t:(t-when[tt])/F;q=q<0?0:q>1?1:q;
+        const r=1-q;
+        D[k]=A[k]*r+Bd[k]*q;D[k+1]=A[k+1]*r+Bd[k+1]*q;D[k+2]=A[k+2]*r+Bd[k+2]*q;D[k+3]=A[k+3]*r+Bd[k+3]*q;
+      }
+      fc.putImageData(out,0,0);
+      if(t<1)raf=requestAnimationFrame(step);else stop();
+    };
+    raf=requestAnimationFrame(step);
+    fin=setTimeout(stop,T+400);
+  };
+})();
+document.querySelectorAll('.opts input[type=checkbox]').forEach(c=>c.addEventListener('change',()=>{c.classList.remove('tick');void c.offsetWidth;c.classList.add('tick');}));
+// плавное появление/исчезновение теней на гранях
+(()=>{
+  const cb=$('shade'),o=$('out');let mix=cb.checked?1:0,sraf=0;
+  const baseOpts=opts;
+  opts=function(){const r=baseOpts();r[1]=mix;return r;};
+  cb.onchange=()=>{
+    cancelAnimationFrame(sraf);
+    const from=mix,to=cb.checked?1:0,T=380,t0=performance.now();
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches){mix=to;window.__quiet=true;render();window.__quiet=false;return;}
+    const step=now=>{
+      const p=Math.min(1,(now-t0)/T),e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+      mix=from+(to-from)*e;
+      window.__quiet=true;render();window.__quiet=false;
+      if(p<1)sraf=requestAnimationFrame(step);
+    };
+    sraf=requestAnimationFrame(step);
+    setTimeout(()=>{if(mix!==to){cancelAnimationFrame(sraf);mix=to;window.__quiet=true;render();window.__quiet=false;}},T+300);
+  };
+})();
+// самолётик: улетает от кнопки в правый верхний угол (там в Chrome загрузки), потом скачивание
+(()=>{
+  const btn=$('dl'),save=btn.onclick;let busy=false,side=Math.random()<.5?1:-1;
+  const svg='<svg width="30" height="24" viewBox="0 0 30 24" aria-hidden="true"><path d="M1 1 29 12 1 23 7 12Z" fill="#e6e0d3" stroke="#1b1a17" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 12H29" stroke="#9a9384" stroke-width="1.5"/><path d="M7 12 1 23 12 14Z" fill="#b9b1a2"/></svg>';
+  btn.onclick=()=>{
+    if(busy)return;
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches){(window.__saveHook||save)();return;}
+    busy=true;
+    const r=btn.getBoundingClientRect();
+    const x0=r.left+r.width/2,y0=r.top+r.height/2;
+    const x2=innerWidth-30-Math.random()*16,y2=16+Math.random()*12; // куда летим
+    // каждый раз новая траектория: сначала ныряет вниз, потом уходит вправо и наверх
+    const R=(a,b)=>a+Math.random()*(b-a),H=innerHeight,Wd=innerWidth;
+    side=-side; // чередуем сторону нырка, чтобы два раза подряд не было похоже
+    const cx1=Math.max(20,Math.min(Wd-20,x0+side*R(60,260))),cy1=Math.min(H-10,y0+R(120,320));
+    const cx2=Math.max(20,Math.min(Wd-20,x2-R(-40,260))),cy2=Math.min(H-10,Math.max(y0,H*R(.55,.95)));
+    const wob=R(0,18),wf=R(1.5,4),wp=R(0,6.28); // немного виляния в полёте
+    const spin=Math.random()<.3?(Math.random()<.5?-1:1)*6.28:0; // иногда делает бочку
+    const pl=document.createElement('div');pl.className='plane';pl.innerHTML=svg;document.body.appendChild(pl);
+    btn.classList.add('sent');
+    const T=1800,t0=performance.now();let lastTrail=0,done=false,raf=0;
+    const finish=()=>{if(done)return;done=true;cancelAnimationFrame(raf);pl.remove();
+      const l=document.createElement('div');l.className='landing';document.body.appendChild(l);setTimeout(()=>l.remove(),600);
+      (window.__saveHook||save)();setTimeout(()=>{busy=false;},300);};
+    const step=now=>{
+      const p=Math.min(1,(now-t0)/T),t=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2; // разгон и торможение
+      const u=1-t;
+      let x=u*u*u*x0+3*u*u*t*cx1+3*u*t*t*cx2+t*t*t*x2,y=u*u*u*y0+3*u*u*t*cy1+3*u*t*t*cy2+t*t*t*y2;
+      const dx=3*u*u*(cx1-x0)+6*u*t*(cx2-cx1)+3*t*t*(x2-cx2),dy=3*u*u*(cy1-y0)+6*u*t*(cy2-cy1)+3*t*t*(y2-cy2);
+      const len=Math.hypot(dx,dy)||1,w=wob*Math.sin(t*wf*6.28+wp)*Math.sin(t*3.14);
+      x+=-dy/len*w;y+=dx/len*w;
+      const roll=spin*Math.max(0,Math.min(1,(t-.35)/.3));
+      const a=Math.atan2(dy,dx)+roll,sc=1.3-0.75*t,op=p>.85?(1-p)/.15:1;
+      pl.style.transform='translate('+x+'px,'+y+'px) rotate('+a+'rad) scale('+sc+')';pl.style.opacity=op;
+      if(now-lastTrail>35&&p<.9){lastTrail=now;const d=document.createElement('i');d.className='trail';d.style.left=x+'px';d.style.top=y+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),950);}
+      if(p<1)raf=requestAnimationFrame(step);else finish();
+    };
+    raf=requestAnimationFrame(step);
+    setTimeout(finish,T+400); // если кадры не идут — всё равно скачать
+  };
+})();
+// подпись: шрифт из игры + шейдер + случайные ч/б глюки + частицы
+(()=>{
+  const TEXT='TgGeyserMc',PAD=5,M=90,cv=$('sig'),fx=$('sigfx'),fc2=fx.getContext('2d');
+  const R=(a,b)=>a+Math.random()*(b-a),still=matchMedia('(prefers-reduced-motion: reduce)');
+  const im=new Image();
+  im.onload=()=>{
+    const fc=document.createElement('canvas');fc.width=fc.height=128;const fx0=fc.getContext('2d');fx0.drawImage(im,0,0);
+    const F=fx0.getImageData(0,0,128,128).data,on=(x,y)=>F[(y*128+x)*4+3]>0;
+    const gw=c=>{let w=0;for(let x=0;x<8;x++)for(let y=0;y<8;y++)if(on((c%16)*8+x,(c>>4)*8+y))w=x+1;return c===32?4:w;};
+    let tw=0;for(const ch of TEXT)tw+=gw(ch.charCodeAt(0))+1;tw-=1;
+    const W=tw+1+PAD*2,H=9+PAD*2;
+    const avail=(document.querySelector('.wrap')||document.body).clientWidth-28;
+    const SC=Math.max(2,Math.min(6,Math.floor(avail/W)));
+    const tc=document.createElement('canvas');tc.width=W;tc.height=H;const tx=tc.getContext('2d'),id=tx.createImageData(W,H),D=id.data;
+    const put=(x,y,v)=>{const i=(y*W+x)*4;D[i]=D[i+1]=D[i+2]=v;D[i+3]=255;};
+    const pix=[],letters=[];
+    for(const pass of [0,1]){let cx=PAD,li=0;for(const ch of TEXT){const c=ch.charCodeAt(0),w=gw(c);
+      if(pass)letters.push({x0:cx,x1:cx+w+1});
+      for(let x=0;x<w;x++)for(let y=0;y<8;y++)if(on((c%16)*8+x,(c>>4)*8+y)){put(cx+x+(pass?0:1),PAD+y+(pass?0:1),pass?255:63);if(pass)pix.push({x:cx+x,y:PAD+y,l:li});}
+      cx+=w+1;li++;}}
+    tx.putImageData(id,0,0);
+    cv.width=W*SC;cv.height=H*SC;cv.style.width=W*SC+'px';
+    fx.width=W*SC+2*M;fx.height=H*SC+2*M;fx.style.left=fx.style.top=-M+'px';
+
+    // ---------- шейдер ----------
+    const gl=cv.getContext('webgl',{premultipliedAlpha:true,alpha:true,antialias:false});
+    let draw=()=>{},U={};
+    if(!gl){const x=cv.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(tc,0,0,W*SC,H*SC);}
+    else{
+      const sh=(t,src)=>{const o=gl.createShader(t);gl.shaderSource(o,src);gl.compileShader(o);if(!gl.getShaderParameter(o,gl.COMPILE_STATUS))console.warn(gl.getShaderInfoLog(o));return o;};
+      const pr=gl.createProgram();
+      gl.attachShader(pr,sh(gl.VERTEX_SHADER,'attribute vec2 p;varying vec2 v;void main(){v=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0,1);}'));
+      gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,`precision mediump float;
+uniform sampler2D t;uniform vec2 S;uniform float T,G,SEED,AMT;uniform vec2 HID;varying vec2 v;
+float h(float n){return fract(sin(n*12.9898+SEED*.731)*43758.5453);}
+float h2(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233))+SEED)*43758.5453);}
+vec4 tx(vec2 p){if(p.x>=HID.x&&p.x<HID.y)return vec4(0.);return texture2D(t,p/S);}
+void main(){
+  vec2 P=v*S;
+  P.y+=sin(P.x*.32+T*2.6)*.45;
+  float bandH=mix(.8,3.5,h(1.7));
+  float band=floor(P.y/bandH),bh=h(band*3.7+11.);
+  float gl=G*step(1.-.5*AMT,bh);
+  P.x+=gl*(h(band*7.1)-.5)*14.*AMT;
+  P.y+=G*step(.92,h(5.3))*(h(2.2)-.5)*3.;
+  vec4 c=tx(P);
+  float glow=0.;
+  for(int i=-3;i<=3;i++)for(int j=-3;j<=3;j++){vec4 s=tx(P+vec2(float(i),float(j))*.8);glow+=step(.9,s.r)*s.a/(1.+float(i*i+j*j));}
+  glow/=7.5;
+  vec3 col=c.rgb;
+  float face=step(.9,c.r)*c.a;
+  col*=mix(1.0,.72,smoothstep(${PAD.toFixed(1)}/S.y,(S.y-${PAD.toFixed(1)})/S.y,v.y))*face+(1.-face);
+  float d=v.x+v.y*.35-fract(T*.22)*1.8+.3;
+  col+=face*smoothstep(.06,0.,abs(d))*.9;
+  float off=mix(1.,4.,h(9.1))*AMT;
+  vec4 L=tx(P+vec2(-off,0)),Rr=tx(P+vec2(off,0));
+  float a=c.a;
+  if(G>0.){
+    float ws=step(.9,L.r)*L.a*(1.-a),bs=step(.9,Rr.r)*Rr.a*(1.-a);
+    if(h(3.3)>.5){float k=ws;ws=bs;bs=k;}
+    col=mix(col,vec3(1.),ws);col=mix(col,vec3(0.),bs);a=max(a,max(ws,bs));
+    if(gl>0.&&h(band+4.)>.55&&a>0.)col=1.-col;
+    vec2 b=floor(P/vec2(mix(2.,6.,h(8.8)),1.));float n=h2(b);
+    if(gl>0.&&n>1.-.1*AMT){col=vec3(step(.5,h2(b+3.)));a=1.;}
+  }
+  col*=.92+.08*step(.5,fract(gl_FragCoord.y/3.));
+  col+=(h2(gl_FragCoord.xy+T)-.5)*.06*a;
+  float ga=clamp(glow*.55,0.,1.)*(1.-a);
+  float A=clamp(max(a,ga),0.,1.);vec3 C=clamp(mix(vec3(.95,.93,.85),col,a),0.,1.);gl_FragColor=vec4(C*A,A);
+}`));
+      gl.linkProgram(pr);gl.useProgram(pr);gl.clearColor(0,0,0,0);gl.disable(gl.BLEND);
+      const bf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,bf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+      const lp=gl.getAttribLocation(pr,'p');gl.enableVertexAttribArray(lp);gl.vertexAttribPointer(lp,2,gl.FLOAT,false,0,0);
+      const tex=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tex);
+      for(const [k,v] of [[gl.TEXTURE_MIN_FILTER,gl.NEAREST],[gl.TEXTURE_MAG_FILTER,gl.NEAREST],[gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE],[gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE]])gl.texParameteri(gl.TEXTURE_2D,k,v);
+      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,tc);
+      gl.uniform2f(gl.getUniformLocation(pr,'S'),W,H);
+      for(const n of ['T','G','SEED','AMT','HID'])U[n]=gl.getUniformLocation(pr,n);
+      draw=(t,g,seed,amt,hid)=>{gl.clear(gl.COLOR_BUFFER_BIT);gl.uniform1f(U.T,t);gl.uniform1f(U.G,g);gl.uniform1f(U.SEED,seed);gl.uniform1f(U.AMT,amt);gl.uniform2f(U.HID,hid[0],hid[1]);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);};
+    }
+
+    // ---------- случайные глюки (без повторяющегося ритма) ----------
+    let gOn=0,gEnd=0,gNext=0,seed=R(0,999),seedAt=0,amt=1;
+    const glitch=now=>{
+      if(!gOn&&now>=gNext){gOn=1;gEnd=now+(Math.random()<.2?R(300,700):R(40,220));amt=R(.25,1);seedAt=0;}
+      if(gOn){
+        if(now>=seedAt){seed=R(0,999);seedAt=now+R(25,120);if(Math.random()<.15)amt=R(.25,1);}
+        if(now>=gEnd){gOn=0;const r=Math.random();gNext=now+(r<.3?R(60,260):r<.8?R(600,2500):R(2500,6000));}
+      }
+    };
+
+    // ---------- частицы ----------
+    // сборка: пиксели слетаются, сливаются в линию, из линии волной поднимаются буквы
+    // потом время от времени одна буква рассыпается (падает / сдувает / взрывается) и собирается обратно
+    const X=x=>M+x*SC,Y=y=>M+y*SC,lineY=PAD+4;
+    let state='wait',t0=0,parts=[],hid=[-1,-1],nextFx=0,mode='';
+    const easeO=k=>1-Math.pow(1-k,3),back=k=>{const c=1.9;return 1+(c+1)*Math.pow(k-1,3)+c*Math.pow(k-1,2);};
+    const cl=k=>Math.max(0,Math.min(1,k));
+    const drawParts=list=>{
+      fc2.clearRect(0,0,fx.width,fx.height);
+      fc2.fillStyle='#3f3f3f';for(const p of list)if(p.a>0)fc2.fillRect(X(p.x+1),Y(p.y+1),SC,SC);
+      fc2.shadowColor='rgba(240,235,215,.55)';fc2.shadowBlur=10;
+      for(const p of list){if(p.a<=0)continue;fc2.globalAlpha=p.a;fc2.fillStyle=p.c||'#fff';fc2.fillRect(X(p.x),Y(p.y),p.s||SC,p.s||SC);}
+      fc2.globalAlpha=1;fc2.shadowBlur=0;
+    };
+    const maxX=Math.max(...pix.map(p=>p.x));
+    const startIntro=now=>{
+      state='intro';t0=now;cv.classList.remove('on');
+      parts=pix.map(p=>{const a=R(0,6.28),r=R(6,26);return{p,sx:p.x+Math.cos(a)*r*1.6,sy:lineY+Math.sin(a)*r*.7,d1:R(0,550),d2:950+(p.x-PAD)*14+R(0,60),x:0,y:0,a:0};});
+    };
+    const intro=now=>{
+      const e=now-t0;
+      for(const q of parts){
+        const k1=easeO(cl((e-q.d1)/520)),k2=back(cl((e-q.d2)/420));
+        const lx=q.sx+(q.p.x-q.sx)*k1,ly=q.sy+(lineY-q.sy)*k1;
+        q.x=lx;q.y=ly+(q.p.y-ly)*k2;q.a=cl((e-q.d1)/200);
+        q.s=SC*(k2>0?1:.55+.45*k1);q.c=k1>=1&&k2===0?'#e6e0d3':'#fff';
+      }
+      drawParts(parts);
+      if(e>950+(maxX-PAD)*14+560){state='idle';cv.classList.add('on');setTimeout(()=>{if(state==='idle')fc2.clearRect(0,0,fx.width,fx.height);},120);nextFx=now+R(2500,7000);}
+    };
+    const startFx=now=>{
+      const cand=letters.map((L,i)=>i).filter(i=>pix.some(p=>p.l===i));
+      const li=cand[Math.floor(Math.random()*cand.length)],L=letters[li];
+      mode=['fall','wind','burst','swirl'][Math.floor(Math.random()*4)];
+      state='fx';t0=now;hid=[L.x0,L.x1];
+      const cx=(L.x0+L.x1)/2,cy=PAD+4;
+      parts=pix.filter(p=>p.l===li).map(p=>{let vx,vy;
+        if(mode==='fall'){vx=R(-10,10);vy=R(-24,-6);}
+        else if(mode==='wind'){const s=Math.random()<.5?-1:1;vx=s*R(18,45);vy=R(-14,2);}
+        else if(mode==='burst'){const a=Math.atan2(p.y-cy,p.x-cx)+R(-.4,.4),sp=R(18,40);vx=Math.cos(a)*sp;vy=Math.sin(a)*sp;}
+        else{vx=0;vy=0;}
+        return{p,x:p.x,y:p.y,vx,vy,a:1,ang:Math.atan2(p.y-cy,p.x-cx),rad:Math.hypot(p.x-cx,p.y-cy),back:R(0,220),bx:0,by:0,cx,cy};});
+    };
+    let lastT=0;
+    const fxStep=now=>{
+      const e=now-t0,dt=Math.min(.05,(now-lastT)/1000),HOLD=1100,RET=650;
+      for(const q of parts){
+        if(e<HOLD){
+          if(mode==='swirl'){q.ang+=dt*R(4,7);q.rad+=dt*7;q.x=q.cx+Math.cos(q.ang)*q.rad;q.y=q.cy+Math.sin(q.ang)*q.rad*.6;}
+          else{
+            const g=mode==='fall'?95:mode==='wind'?-6:25;
+            q.vy+=g*dt;q.vx*=mode==='burst'?.93:.985;if(mode==='burst')q.vy*=.93;
+            q.x+=q.vx*dt;q.y+=q.vy*dt;
+            const floor=PAD+10;if(mode==='fall'&&q.y>floor){q.y=floor;q.vy*=-R(.3,.55);q.vx*=.7;}
+          }
+          q.bx=q.x;q.by=q.y;
+        }else{
+          const k=easeO(cl((e-HOLD-q.back)/RET));
+          q.x=q.bx+(q.p.x-q.bx)*k;q.y=q.by+(q.p.y-q.by)*k;
+        }
+      }
+      drawParts(parts);
+      if(e>HOLD+RET+260){state='idle';hid=[-1,-1];fc2.clearRect(0,0,fx.width,fx.height);nextFx=now+R(3500,11000);}
+    };
+
+    let vis=false,seen=false;
+    new IntersectionObserver(en=>{vis=en[0].isIntersecting;if(vis&&!seen){seen=true;if(still.matches){state='idle';cv.classList.add('on');}else startIntro(performance.now());}}).observe(cv);
+    const frame=now=>{
+      if(vis||state==='intro'){
+        if(still.matches){draw(1.3,0,0,0,[-1,-1]);}
+        else{
+          if(state!=='intro')glitch(now);
+          if(state==='intro')intro(now);
+          else if(state==='idle'&&now>=nextFx)startFx(now);
+          if(state==='fx')fxStep(now);
+          draw(now/1000,gOn,seed,amt,hid);
+        }
+      }
+      lastT=now;
+      requestAnimationFrame(frame);
+    };
+    window.__sig={frame,startFx:()=>startFx(performance.now()),state:()=>state,draw};
+    draw(1.3,0,0,0,[-1,-1]);
+    requestAnimationFrame(frame);
+  };
+  im.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACAAQMAAAD58POIAAAABlBMVEX///////9VfPVsAAAAAXRSTlMAQObYZgAAAtJJREFUeNrtk6GPG1cQxj90eqBSnoIWVPKoCgg02qtK7oECwyXlBgcMH+vCAQWjolWRoVUVWEUGBQUBgYaBkUL2L4gWXQZEt5l5jq3bVZILDMjn2efVb3+aefukxffMwruGhJh4B0sooO0aTikRgGgAypHAtLuAJtPGABQKKkZIBwduJFiaYdUhpTNg2JQNiP2WeboDWDLlXOlSc/YRnCFrkeecRAQgJMGWQlgNHESYk1LAnpZLCUPMLcCIEUdKQYOQBJ9JBCER80kiQJqArJpDtllr5gim2TY8eciDait9EBbJaMXCzJJCx6+Pgj90YOn7rabQ834v+E/MNKEYshX8cwGlh+CFWAqQE2DxKZylz6JlCmax562KR3vuCfAOZEvTBE7UmGE9HBBFAwKwSCgGERPhDJq9UOJYQCdi4LUQfwQbyeRdSPvQA/MoGIyAJZgDs6PkoKw4AeRD3thuDxw6fjVkIBxlK0mOHHa8FwFaYVF/9/DyBMTCyfGOpRhDbttyXJ15+XIKQMYlCSXEfDsBidMWOGwObS8eNQDguD1y8vOQyEzwqZwN7EnoZAwth2QH1LTpBDjwQC21EpSYC7js5NvNEogTsAKeT0ACCJ7Jwc6NLwMFdgDmUsl6jWlih5Jn3Xngx5vVCqfkdWmJ7hlwSXhoDIOD0uPx/PTbm6qqaqCurSpA/v19CoqhNfSuvr+r1Y23xaiu6qurs6F6d2/G3f296rlHbVUDqNyYAO8xBZUVnKD8PgsW9fXNu/F6fDdejOUSsAIW4+h1fWOPi4HiVKWBL4+DUpVdhkcMT8ZPAKvFwv4mRvXAGMfxZrG4GUe17QxPfEjtl7/EV4Jpfvl5Bn5NM/Anz8BfOgN/82M9/i9T5qEUf4jAGvjRF7wnoqeRbjsg9p0C0JieRmwddKQnI0bFujKQ9NQjRtyiQtcNbqC4WwAN4Iaqxg6eJc6JDz6OD74blGMNvZoZAAAAAElFTkSuQmCC';
+})();
+// ---------- Telegram Mini App ----------
+(()=>{
+  const tg=window.Telegram&&Telegram.WebApp;
+  if(!tg||!tg.platform||tg.platform==='unknown')return; // открыто не в Телеграме — обычный сайт
+  const v=x=>tg.isVersionAtLeast&&tg.isVersionAtLeast(x);
+  document.documentElement.classList.add('tg');
+  try{tg.ready();tg.expand();}catch(e){}
+  try{if(v('6.1')){tg.setHeaderColor('#1b1a17');tg.setBackgroundColor('#1b1a17');}}catch(e){}
+  try{if(v('7.10'))tg.setBottomBarColor('#1b1a17');}catch(e){}
+  const hf=v('6.1')&&tg.HapticFeedback;
+  const tap=s=>{try{hf&&hf.impactOccurred(s||'light');}catch(e){}};
+  const sel=()=>{try{hf&&hf.selectionChanged();}catch(e){}};
+  const note=t=>{try{hf&&hf.notificationOccurred(t);}catch(e){}};
+  document.addEventListener('click',e=>{if(e.target.closest('button,#dd-btn'))tap();},true);
+  document.addEventListener('change',e=>{if(e.target.matches('input[type=checkbox]'))sel();},true);
+  $('dd-list').addEventListener('click',sel,true);
+  // скачивание: внутри Телеграма обычная загрузка файла не работает -> показываем карточку
+  let sheet=null;
+  const close=()=>{if(!sheet)return;const s=sheet;sheet=null;s.classList.remove('on');setTimeout(()=>s.remove(),320);try{tg.BackButton.hide();tg.BackButton.offClick(close);}catch(e){}};
+  window.__saveHook=()=>{
+    note('success');
+    const url=exportURL(),name='head_'+$('size').value+'.png';
+    sheet=document.createElement('div');sheet.className='tgsheet';
+    sheet.innerHTML='<div class="card"><img alt="иконка"><p>зажми картинку → «сохранить»</p><div class="row"><button class="p" data-a="share">поделиться</button><button data-a="close">закрыть</button></div></div>';
+    sheet.querySelector('img').src=url;
+    const shareBtn=sheet.querySelector('[data-a=share]');
+    let file=null;
+    fetch(url).then(r=>r.blob()).then(b=>{file=new File([b],name,{type:'image/png'});if(!(navigator.canShare&&navigator.canShare({files:[file]})))shareBtn.remove();}).catch(()=>shareBtn.remove());
+    sheet.addEventListener('click',async e=>{
+      if(e.target===sheet||e.target.dataset.a==='close'){close();return;}
+      if(e.target.dataset.a==='share'&&file){try{await navigator.share({files:[file]});}catch(err){}}
+    });
+    document.body.appendChild(sheet);requestAnimationFrame(()=>requestAnimationFrame(()=>sheet&&sheet.classList.add('on')));
+    try{if(v('6.1')){tg.BackButton.onClick(close);tg.BackButton.show();}}catch(e){}
+  };
+})();
+document.querySelector('.community').addEventListener('click',e=>{const tg=window.Telegram&&Telegram.WebApp;if(tg&&tg.platform&&tg.platform!=='unknown'&&typeof tg.openTelegramLink==='function'){e.preventDefault();tg.openTelegramLink('https://t.me/tggeysermc');}});
+// свой выпадающий список размера
+(()=>{
+  const dd=$('dd'),btn=$('dd-btn'),list=$('dd-list'),inp=$('size');
+  const items=[...list.querySelectorAll('li')];let act=-1;
+  const setAct=i=>{act=(i+items.length)%items.length;items.forEach((li,j)=>li.classList.toggle('act',j===act));};
+  const open=()=>{dd.classList.add('open');btn.setAttribute('aria-expanded','true');setAct(items.findIndex(li=>li.dataset.v===inp.value));list.focus();};
+  const close=(focus)=>{dd.classList.remove('open');btn.setAttribute('aria-expanded','false');if(focus)btn.focus();};
+  const pick=i=>{const li=items[i];inp.value=li.dataset.v;const sp=btn.firstElementChild;if(sp.textContent!==li.dataset.v+' px'){sp.textContent=li.dataset.v+' px';sp.classList.remove('swap');void sp.offsetWidth;sp.classList.add('swap');}items.forEach(x=>x.setAttribute('aria-selected',x===li?'true':'false'));close(true);};
+  btn.addEventListener('click',()=>dd.classList.contains('open')?close(true):open());
+  btn.addEventListener('keydown',e=>{if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();open();}});
+  items.forEach((li,i)=>{li.addEventListener('click',()=>pick(i));li.addEventListener('mousemove',()=>setAct(i));});
+  list.addEventListener('keydown',e=>{
+    if(e.key==='ArrowDown'){e.preventDefault();setAct(act+1);}
+    else if(e.key==='ArrowUp'){e.preventDefault();setAct(act-1);}
+    else if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(act);}
+    else if(e.key==='Escape'||e.key==='Tab'){close(e.key==='Escape');}
+  });
+  document.addEventListener('click',e=>{if(!dd.contains(e.target))close(false);});
+})();
+</script>
+</body>
+</html>
