@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#1b1a17">
+<meta name="theme-color" content="#101115">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <title>headrender — иконка головы из скина</title>
 <style>
@@ -132,6 +132,57 @@ button,.drop,textarea,.dd-btn{transition:background .15s ease,border-color .15s 
 #sig.on{opacity:1}
 #sigfx{position:absolute;pointer-events:none}
 code{color:#c9c2b2;background:#26241f;padding:0 3px}
+/* Graphite studio */
+:root{color-scheme:dark;--accent:#b5a0ff}
+html,body{background:#101115;color:#eaebf2}
+body{font:14px/1.6 Arial,Helvetica,sans-serif}
+.wrap{max-width:1040px;padding:32px 24px 40px}
+header{border-bottom:1px solid #292b35;padding:0 0 22px;margin-bottom:26px;gap:12px}
+header canvas{background:#252332;border-radius:10px;padding:4px;width:42px;height:42px}
+header b{font:700 23px/1 Arial,sans-serif;letter-spacing:-.8px}
+header:after{content:'SKIN → ICON';margin-left:auto;font:11px/1.2 Consolas,monospace;letter-spacing:2px;color:#777c91}
+.cols{grid-template-columns:minmax(280px,.8fr) minmax(0,1.2fr);gap:20px}
+.cols>section{min-width:0;background:#191b22;border:1px solid #2b2e3a;border-radius:22px;padding:24px}
+h2{font:600 12px/1 Arial,sans-serif;text-transform:uppercase;letter-spacing:2px;color:#a3a7ba;margin-bottom:20px}
+h2:before{content:''}
+.drop{border:1px dashed #626074;border-radius:14px;background:#20212b;text-align:center;padding:30px 12px;transition:background .2s,border-color .2s}
+.drop:before{content:'↑';display:block;font:26px/1 Arial;color:#c4b4ff;margin-bottom:12px}
+.drop strong{font-weight:600;color:#ece8ff}.drop span{color:#9095ab}
+.drop:hover,.drop.over,.drop:focus-visible{border-color:#b5a0ff;background:#2a2639}
+label.l{color:#9c9fb1;font-size:13px;margin-top:22px}
+textarea{background:#12141b;color:#e8e9f3;border:1px solid #343746;border-radius:12px;padding:12px;min-height:100px}
+textarea::placeholder{color:#646b83}textarea:focus{outline:1px solid #b5a0ff;outline-offset:0}
+button, .dd-btn{font-family:Arial,sans-serif;font-weight:600;min-height:44px;border:1px solid #3b3f50;border-radius:11px;box-shadow:none;background:#272a35;color:#dce0ee;transition:background .2s,transform .15s,border-color .2s}
+button:hover,.dd-btn:hover{background:#343747;border-color:#63647d}
+button:active{transform:scale(.97);box-shadow:none}
+button.p{background:#b5a0ff;color:#211832;border-color:#b5a0ff}
+button.p:hover{background:#c8b8ff;border-color:#c8b8ff}
+button:focus-visible,input[type=checkbox]:focus-visible{outline:2px solid #b5a0ff;outline-offset:3px}
+.skin{margin-top:26px;align-items:center}.skin canvas{border-radius:10px;border:1px solid #3b3f50;background:#12141b}.skin p{color:#9197ad}
+.big{border:1px solid #333747;border-radius:16px;background:radial-gradient(ellipse at 50% 45%,#343042,#20222c 75%);padding:18px}
+.big .px{color:#858a9f}
+.cap{color:#7d849a;margin-top:7px;font-size:11px}
+.opts{font-size:12px;gap:8px 16px;color:#b8bdcf}
+input[type=checkbox]{background:#12141b;border:1px solid #55596b;border-radius:5px;box-shadow:none}
+input[type=checkbox]:checked{background:#9980e8;border-color:#b5a0ff}
+.opts label:hover input[type=checkbox]{border-color:#a2a6bc}
+.opts label:hover input[type=checkbox]:checked{border-color:#d8cbff}
+input[type=checkbox]:active{transform:scale(.9)}
+.dd.open .dd-btn{border-color:#b5a0ff}.dd-btn:after{border-top-color:#b5a0ff}
+.dd-list{background:#222530;border:1px solid #55506a;border-radius:12px;padding:5px;box-shadow:0 12px 28px #0008;color:#eaebf2}
+.dd-list li{border-radius:7px;color:#c6cbdf}.dd-list li:hover,.dd-list li.act{background:#39324d}
+.dd-list li[aria-selected=true]{color:#d0c1ff;border-left-color:#b5a0ff}
+#dl{flex:1}#copy{flex:1;font-size:12px}
+.sizes{opacity:.85}.sizes small{color:#858a9f}
+.sign{margin-top:34px;padding:20px 0 30px}
+.community{border:1px solid #383b4b;border-radius:24px;color:#acb3cd;padding:9px 18px;background:#191b22;font:600 13px/1.4 Arial,sans-serif;gap:8px}
+.community:hover{color:#e2d8ff;border-color:#b5a0ff}
+.msg.ok{background:#2d283e;color:#d4c6ff;border-color:#b5a0ff}
+.trail{background:#b5a0ff}.landing{border-color:#b5a0ff;border-radius:50%}
+.tgsheet .card{background:#191b22;border:1px solid #3a3d4d;border-radius:22px 22px 0 0}.tgsheet p{color:#a3abc2}
+@media(max-width:760px){.cols{grid-template-columns:1fr}}
+@media(max-width:560px){.wrap{padding:18px 12px 28px}.cols{gap:14px}.cols>section{padding:18px;border-radius:18px}header{margin-bottom:18px}.big{padding:18px}.big .fx{top:18px}.bar .slot{width:calc((100vw - 76px)/9);height:calc((100vw - 76px)/9)}.opts{gap:8px 12px}.dd{margin-top:4px}.community{min-height:44px}header:after{font-size:9px;letter-spacing:1px}}
+
 </style>
 </head>
 <body>
@@ -578,8 +629,8 @@ void main(){
   const v=x=>tg.isVersionAtLeast&&tg.isVersionAtLeast(x);
   document.documentElement.classList.add('tg');
   try{tg.ready();tg.expand();}catch(e){}
-  try{if(v('6.1')){tg.setHeaderColor('#1b1a17');tg.setBackgroundColor('#1b1a17');}}catch(e){}
-  try{if(v('7.10'))tg.setBottomBarColor('#1b1a17');}catch(e){}
+  try{if(v('6.1')){tg.setHeaderColor('#101115');tg.setBackgroundColor('#101115');}}catch(e){}
+  try{if(v('7.10'))tg.setBottomBarColor('#101115');}catch(e){}
   const hf=v('6.1')&&tg.HapticFeedback;
   const tap=s=>{try{hf&&hf.impactOccurred(s||'light');}catch(e){}};
   const sel=()=>{try{hf&&hf.selectionChanged();}catch(e){}};
